@@ -1,38 +1,154 @@
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
   min-height: 100vh;
+  background-color: black;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+/* Online indicator */
+.online-indicator {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.quote-container {
+  text-align: center;
+  max-width: 800px;
+  padding: 2rem;
+}
+
+.quote {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1.2;
+  margin: 0 0 2rem 0;
+  font-family: 'Georgia', serif;
+}
+
+.author {
+  color: #cccccc;
+  font-size: 1.2rem;
+  margin: 0;
+  font-style: italic;
+  font-family: 'Georgia', serif;
+}
+
+/* Offline page styles */
+.offline-page {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+}
+
+.offline-container {
+  text-align: center;
+  max-width: 600px;
+  padding: 2rem;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.offline-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.7;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.offline-title {
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin: 0 0 1.5rem 0;
+  font-family: 'Georgia', serif;
+  color: #ff6b6b;
+}
+
+.offline-message {
+  font-size: 1.2rem;
+  line-height: 1.5;
+  margin: 0 0 2rem 0;
+  color: #ecf0f1;
+  font-family: 'Georgia', serif;
+}
+
+.offline-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.online {
+  background-color: #2ecc71;
+}
+
+.status-indicator.offline {
+  background-color: #e74c3c;
+}
+
+.status-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
   }
-  to {
-    transform: rotate(360deg);
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .quote {
+    font-size: 1.8rem;
+  }
+  
+  .author {
+    font-size: 1rem;
+  }
+  
+  .quote-container {
+    padding: 1rem;
+  }
+
+  .offline-title {
+    font-size: 1.8rem;
+  }
+  
+  .offline-message {
+    font-size: 1rem;
+  }
+  
+  .offline-container {
+    padding: 1rem;
+  }
+
+  .online-indicator {
+    top: 10px;
+    right: 10px;
+    font-size: 0.8rem;
   }
 }
