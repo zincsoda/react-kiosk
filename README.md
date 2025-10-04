@@ -1,6 +1,19 @@
-# Getting Started with Create React App
+# Quote Kiosk Display
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React-based kiosk application designed to run on Raspberry Pi and other Single Board Computers (SBCs). Features an inspirational quote display with offline detection and automatic failover to an offline landing page.
+
+## Overview
+
+This application is specifically designed for kiosk mode deployments on embedded systems like Raspberry Pi, where it will display continuously in fullscreen mode. When connected to the internet, it shows inspirational quotes; when offline, it displays a professional offline message.
+
+## Features
+
+- **Offline Detection**: Automatically detects when internet connection is lost
+- **Graceful Offline Handling**: Shows a professional offline landing page when disconnected
+- **Kiosk-Ready**: Optimized for fullscreen display on Raspberry Pi and SBCs
+- **Responsive Design**: Works on various screen sizes and orientations
+- **Visual Status Indicators**: Clear online/offline status with animated indicators
+- **Low Resource Usage**: Lightweight React app optimized for embedded systems
 
 ## Available Scripts
 
@@ -29,42 +42,151 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+## Kiosk Deployment on Raspberry Pi
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Prerequisites
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Raspberry Pi 3/4 or compatible SBC
+- Node.js 16+ installed
+- HDMI display/touchscreen
+- Optional: WiFi/LAN connection
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Setup Instructions
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1. **Clone and Install**
+   ```bash
+   git clone <repository-url>
+   cd react-kiosk
+   npm install
+   ```
 
-## Learn More
+2. **Build for Production**
+   ```bash
+   npm run build
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+3. **Install Node.js Server**
+   ```bash
+   npm install -g serve
+   cd build
+   serve -s . -l 3000
+   ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+4. **Configure Raspberry Pi for Kiosk Mode**
+   
+   Create a startup script (`kiosk.sh`):
+   ```bash
+   #!/bin/bash
+   unclutter &
+   xset s off
+   xset -dpms
+   xset s noblank
+   chromium-browser --kiosk --disable-infobars --disable-session-crashed-bubble http://localhost:3000
+   ```
 
-### Code Splitting
+   Make it executable:
+   ```bash
+   chmod +x kiosk.sh
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+5. **Auto-start Options**
+   
+   **Option A - Desktop Autostart:**
+   - Add `@kiosk.sh` to `/home/pi/.config/lxsession/LXDE-pi/autostart`
+   
+   **Option B - Systemd Service:**
+   ```bash
+   # Create service file
+   sudo nano /etc/systemd/system/kiosk.service
+   ```
+   
+   Add the following content:
+   ```ini
+   [Unit]
+   Description=Kiosk Display
+   After=multi-user.target graphical-session.target
+   
+   [Service]
+   Type=oneshot
+   RemainAfterExit=yes
+   ExecStart=/home/pi/kiosk.sh
+   User=pi
+   
+   [Install]
+   WantedBy=multi-user.target
+   ```
+   
+   Enable and start:
+   ```bash
+   sudo systemctl enable kiosk.service
+   sudo systemctl start kiosk.service
+   ```
 
-### Analyzing the Bundle Size
+### Performance Optimization
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- **Disable Power Management**: Prevent screen sleep/power saving
+- **GPU Memory Split**: Increase GPU memory split for better graphics performance
+- **CPU Governor**: Set to 'performance' mode for consistent frame rates
+- **Thermal Management**: Ensure adequate cooling for sustained operation
 
-### Making a Progressive Web App
+### Hardware Considerations
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- **Display**: Supports 1920x1080 minimum, works with touchscreens
+- **Memory**: Recommended 2GB RAM minimum for smooth operation
+- **Storage**: 8GB SD card minimum, consider USB SSD for better performance
+- **Network**: WiFi/Ethernet for online content (graceful offline handling available)
 
-### Advanced Configuration
+## Troubleshooting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Common Kiosk Issues
 
-### Deployment
+**Browser Not Loading:**
+- Ensure Chromium is installed: `sudo apt install chromium-browser`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+**Auto-start Problems:**
+- Check service status: `sudo systemctl status kiosk.service`
+- View logs: `journalctl -u kiosk.service -f`
+- Verify script permissions: `ls -la kiosk.sh`
 
-### `npm run build` fails to minify
+### Customization
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Changing the Quote:**
+Edit the quote and author in `src/App.js`:
+```javascript
+<h1 className="quote">"Your custom quote here"</h1>
+<p className="author">— Author Name</p>
+```
+
+**Modifying Offline Message:**
+Update the offline content in `src/App.js` offline section:
+```javascript
+<h1 className="offline-title">Custom Offline Title</h1>
+<p className="offline-message">Custom offline message...</p>
+```
+
+**Styling Changes:**
+All styles can be modified in `src/App.css` to match your branding or color scheme.
+
+## Development
+
+### Development Mode
+```bash
+npm start
+```
+Runs the development server at [http://localhost:3000](http://localhost:3000)
+
+### Building for Production
+```bash
+npm run build
+```
+Creates optimized production build in the `build` folder.
+
+### Testing
+```bash
+npm test
+```
+Runs the Interactive test runner.
+
+## License
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and is available under the MIT License.
